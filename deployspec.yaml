@@ -4,7 +4,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo "Deploying index-photos."
+      - echo "Deploying index-photos"
       - aws lambda update-function-code --function-name index-photos --zip-file fileb://dist/index-photos.zip --region us-east-1
       - aws lambda wait function-updated-v2 --function-name index-photos --region us-east-1
 
