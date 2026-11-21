@@ -70,7 +70,7 @@ def lambda_handler(event, context):
             "labels": custom_labels
         }
 
-        print("Document to index:", json_obj)
+        print("Document to index:-", json_obj)
 
         es.index(
             index="photos",
