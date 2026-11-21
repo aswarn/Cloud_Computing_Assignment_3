@@ -5,46 +5,22 @@ phases:
   install:
     runtime-versions:
       python: 3.11
-    commands:
-      - echo "Installing packaging tools"
-      - pip install --upgrade pip
 
   build:
     commands:
-      - echo "Packaging index-photos Lambda"
+      - mkdir -p dist/index-photos dist/search-photos
 
-      - mkdir -p /tmp/index-package
+      - pip install -r lambda_function/index_photos/requirements.txt -t dist/index-photos
+      - cp lambda_function/index_photos/lambda_function.py dist/index-photos/
 
-      - pip install -r lambda_function/index_photos/requirements.txt -t /tmp/index-package
+      - pip install -r lambda_function/search_photos/requirements.txt -t dist/search-photos
+      - cp lambda_function/search_photos/lambda_function.py dist/search-photos/
 
-      - cp lambda_function/index_photos/lambda_function.py /tmp/index-package/
-
-      - cd /tmp/index-package
-      - zip -r /tmp/index-photos.zip .
-      - cd $CODEBUILD_SRC_DIR
-
-      - echo "Packaging LF2-search-photos Lambda"
-
-      - mkdir -p /tmp/search-package
-
-      - pip install -r lambda_function/search_photos/requirements.txt -t /tmp/search-package
-
-      - cp lambda_function/search_photos/lambda_function.py /tmp/search-package/
-
-      - cd /tmp/search-package
-      - zip -r /tmp/search-photos.zip .
-      - cd $CODEBUILD_SRC_DIR
-
-      - echo "Deploying index-photos"
-      - aws lambda update-function-code --function-name index-photos --zip-file fileb:///tmp/index-photos.zip --region us-east-1
-
-      - echo "Deploying LF2-search-photos"
-      - aws lambda update-function-code --function-name LF2-search-photos --zip-file fileb:///tmp/search-photos.zip --region us-east-1
-
-      - echo "Lambda deployment completed"
+      - cd dist/index-photos && zip -r ../index-photos.zip . && cd ../..
+      - cd dist/search-photos && zip -r ../search-photos.zip . && cd ../..
 
 artifacts:
   files:
-    - /tmp/index-photos.zip
-    - /tmp/search-photos.zip
-  discard-paths: yes
+    - dist/index-photos.zip
+    - dist/search-photos.zip
+    - deployspec.yml
